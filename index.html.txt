@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>منصة احتساب الترقية لأبطال قيادة شرطة محافظة نينوى</title>
+    <style>
+        /* تنسيقات عامة */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            direction: rtl;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            background: url('https://i.imgur.com/5L9ZQ6v.jpg') no-repeat center center fixed; /* خلفية مميزة */
+            background-size: cover;
+            color: white;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        /* تصميم الحاوية الرئيسية */
+        .container {
+            background-color: rgba(0, 0, 0, 0.7); /* شفافية للخلفية */
+            backdrop-filter: blur(10px);
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 500px;
+        }
+
+        h1 {
+            font-size: 32px;
+            margin-bottom: 20px;
+            color: #ff6f61;
+        }
+
+        /* تنسيقات الإدخال */
+        input[type="date"], input[type="number"] {
+            padding: 15px;
+            width: calc(100% - 30px);
+            margin-top: 15px;
+            border: none;
+            border-radius: 10px;
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 16px;
+        }
+
+        input[type="date"]::-webkit-calendar-picker-indicator {
+            filter: invert(1);
+        }
+
+        /* زر الحساب */
+        button {
+            padding: 15px 30px;
+            margin-top: 25px;
+            background: linear-gradient(135deg, #ff6f61, #ff9a8b);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 10px 25px rgba(255, 111, 97, 0.5);
+        }
+
+        /* نتائج الحساب */
+        .result {
+            margin-top: 30px;
+            font-size: 16px;
+            color: #e0e0e0;
+            word-wrap: break-word;
+        }
+
+        .promotion {
+            margin-top: 15px;
+            font-size: 16px;
+            color: #d4d4d4;
+        }
+
+        .seniority-details {
+            font-size: 14px;
+            color: #aaa;
+        }
+
+        /* أيقونة في الأعلى */
+        .icon {
+            font-size: 48px;
+            color: #ff6f61;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="icon">📊</div>
+        <h1>منصة احتساب الترقية لأبطال قيادة شرطة محافظة نينوى</h1>
+        <p>يرجى إدخال تاريخ تعيين الموظف:</p>
+        <input type="date" id="hireDate">
+        <p>عدد سنوات القدم (مكافأة):</p>
+        <input type="number" id="seniorityYears" placeholder="أدخل عدد السنوات" min="0">
+        <p>عدد سنوات انقطاع الخدمة:</p>
+        <input type="number" id="interruptionYears" placeholder="أدخل عدد السنوات" min="0">
+        <button onclick="calculatePromotions()">احسب الترقيات</button>
+        <div class="result" id="result"></div>
+    </div>
+
+    <script>
+        function calculatePromotions() {
+            const hireDateInput = document.getElementById('hireDate').value;
+            let seniorityYearsInput = parseInt(document.getElementById('seniorityYears').value) || 0;
+            let interruptionYearsInput = parseInt(document.getElementById('interruptionYears').value) || 0;
+            const resultDiv = document.getElementById('result');
+
+            if (!hireDateInput) {
+                resultDiv.innerHTML = "<p style='color: #ff6f61;'>يرجى إدخال تاريخ التعيين.</p>";
+                return;
+            }
+
+            const ranks = [
+                { title: "شرطي أول", years: 1 },
+                { title: "نائب عريف", years: 2 },
+                { title: "عريف", years: 3 },
+                { title: "رئيس عرفاء", years: 3 },
+                { title: "مفوض د8", years: 3 },
+                { title: "مفوض 7", years: 3 },
+                { title: "مفوض د6", years: 3 },
+                { title: "مفوض د5", years: 3 },
+                { title: "مفوض د4", years: 3 },
+                { title: "مفوض د3", years: 3 },
+                { title: "مفوض د2", years: 3 },
+                { title: "مفوض د1", years: 3 }
+            ];
+
+            const hireDate = new Date(hireDateInput);
+            let currentDate = new Date(hireDate);
+            let output = "<p>تاريخ التعيين: " + hireDate.toISOString().split('T')[0] + "</p>";
+
+            // تطبيق مكافأة القدم وتأخير الترقيات بسبب انقطاع الخدمة
+            ranks.forEach((rank, index) => {
+                let adjustedYears = rank.years;
+                let deductedYears = 0;
+
+                // تطبيق القدم فقط بعد رتبة "عريف"
+                if (index > 2 && seniorityYearsInput > 0) {
+                    deductedYears = Math.min(seniorityYearsInput, adjustedYears);
+                    adjustedYears -= deductedYears;
+                    seniorityYearsInput -= deductedYears;
+                }
+
+                // التأكد أن المدة لا تقل عن سنة واحدة
+                adjustedYears = Math.max(adjustedYears, 1);
+
+                // تحديث التاريخ بناءً على السنوات المعدلة
+                currentDate.setFullYear(currentDate.getFullYear() + adjustedYears);
+
+                // تأخير الترقيات بسبب انقطاع الخدمة
+                if (interruptionYearsInput > 0) {
+                    currentDate.setFullYear(currentDate.getFullYear() + interruptionYearsInput);
+                    output += `<div class="seniority-details">تأخير بسبب انقطاع الخدمة (${interruptionYearsInput} سنوات).</div>`;
+                    interruptionYearsInput = 0; // تطبيق التأخير مرة واحدة فقط
+                }
+
+                // إضافة التفاصيل إلى النتيجة
+                output += `<div class="promotion">[${rank.title}] بتاريخ: ${currentDate.toISOString().split('T')[0]}</div>`;
+                if (index > 2) {
+                    output += `<div class="seniority-details">سنوات القدم المستخدمة: ${deductedYears} | سنوات القدم المتبقية: ${seniorityYearsInput}</div>`;
+                }
+            });
+
+            resultDiv.innerHTML = output;
+        }
+    </script>
+</body>
+</html>
