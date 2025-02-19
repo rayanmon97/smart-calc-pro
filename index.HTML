@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SmartCalc Pro</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #f4f4f9;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+    }
+    .calculator {
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+      width: 300px;
+    }
+    .display {
+      background-color: #e0e0e0;
+      text-align: right;
+      padding: 10px;
+      font-size: 2em;
+      height: 50px;
+      margin-bottom: 10px;
+      border-radius: 5px;
+      overflow: hidden;
+    }
+    .buttons {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+    .button {
+      background-color: #007bff;
+      color: white;
+      font-size: 1.5em;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      padding: 20px;
+      transition: background-color 0.3s;
+    }
+    .button:hover {
+      background-color: #0056b3;
+    }
+    .button.operator {
+      background-color: #ff9500;
+    }
+    .button.operator:hover {
+      background-color: #cc7a00;
+    }
+    .button.clear {
+      background-color: #dc3545;
+    }
+    .button.clear:hover {
+      background-color: #a71d2a;
+    }
+  </style>
+</head>
+<body>
+  <div class="calculator">
+    <div class="display" id="display">0</div>
+    <div class="buttons">
+      <button class="button" onclick="press('7')">7</button>
+      <button class="button" onclick="press('8')">8</button>
+      <button class="button" onclick="press('9')">9</button>
+      <button class="button operator" onclick="setOperation('÷')">÷</button>
+      <button class="button" onclick="press('4')">4</button>
+      <button class="button" onclick="press('5')">5</button>
+      <button class="button" onclick="press('6')">6</button>
+      <button class="button operator" onclick="setOperation('×')">×</button>
+      <button class="button" onclick="press('1')">1</button>
+      <button class="button" onclick="press('2')">2</button>
+      <button class="button" onclick="press('3')">3</button>
+      <button class="button operator" onclick="setOperation('-')">-</button>
+      <button class="button clear" onclick="clearDisplay()">C</button>
+      <button class="button" onclick="press('0')">0</button>
+      <button class="button" onclick="calculate()">=</button>
+      <button class="button operator" onclick="setOperation('+')">+</button>
+    </div>
+  </div>
+
+  <script>
+    let currentInput = "0";
+    let num1 = null;
+    let num2 = null;
+    let operation = null;
+
+    function press(buttonText) {
+      if (currentInput === "0") {
+        currentInput = buttonText;
+      } else {
+        currentInput += buttonText;
+      }
+      updateDisplay();
+    }
+
+    function setOperation(op) {
+      if (currentInput !== "0") {
+        num1 = parseFloat(currentInput);
+        operation = op;
+        currentInput = "0";
+      }
+    }
+
+    function calculate() {
+      num2 = parseFloat(currentInput);
+      if (operation === "+") {
+        currentInput = (num1 + num2).toString();
+      } else if (operation === "-") {
+        currentInput = (num1 - num2).toString();
+      } else if (operation === "×") {
+        currentInput = (num1 * num2).toString();
+      } else if (operation === "÷") {
+        currentInput = (num1 / num2).toString();
+      }
+      operation = null;
+      updateDisplay();
+    }
+
+    function clearDisplay() {
+      currentInput = "0";
+      num1 = null;
+      num2 = null;
+      operation = null;
+      updateDisplay();
+    }
+
+    function updateDisplay() {
+      document.getElementById("display").innerText = currentInput;
+    }
+  </script>
+</body>
+</html>
